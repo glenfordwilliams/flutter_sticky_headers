@@ -89,8 +89,7 @@ class RenderStickyHeader extends RenderBox
   RenderBox get _headerBox => lastChild;
 
   RenderBox get _contentBox => firstChild;
-
-  @override
+ @override
   void performLayout() {
     // ensure we have header and content boxes
     assert(childCount == 2);
@@ -106,27 +105,33 @@ class RenderStickyHeader extends RenderBox
     // determine size of ourselves based on content widget
     final width = max(constraints.minWidth, _contentBox.size.width);
     final height = max(constraints.minHeight,
-        _overlapHeaders ? contentHeight : headerHeight + contentHeight);
-    size = new Size(width, height);
+        _overlapHeaders ? contentHeight : contentHeight);
+    size = Size(width, height);
     assert(size.width == constraints.constrainWidth(width));
     assert(size.height == constraints.constrainHeight(height));
     assert(size.isFinite);
-
-    // place content underneath header
-    final contentParentData = _contentBox.parentData as MultiChildLayoutParentData;
-    contentParentData.offset = new Offset(0.0, _overlapHeaders ? 0.0 : headerHeight);
 
     // determine by how much the header should be stuck to the top
     final double stuckOffset = determineStuckOffset();
 
     // place header over content relative to scroll offset
     final double maxOffset = height - headerHeight;
-    final headerParentData = _headerBox.parentData as MultiChildLayoutParentData;
-    headerParentData.offset = new Offset(0.0, max(0.0, min(-stuckOffset, maxOffset)));
+    final headerParentData =
+        _headerBox.parentData as MultiChildLayoutParentData;
+    // edited headerParentData.offset = Offset(0.0, max(0.0, min(-stuckOffset, maxOffset)));
+    headerParentData.offset =
+        Offset(0.0, max(0.0, min(-stuckOffset, maxOffset)));
+
+    // place content underneath header
+    final contentParentData =
+        _contentBox.parentData as MultiChildLayoutParentData;
+    //edited contentParentData.offset = Offset(0.0, _overlapHeaders ? 0.0 : headerHeight);
+    contentParentData.offset = Offset( headerParentData.offset.dx, 0.0);
 
     // report to widget how much the header is stuck.
     if (_callback != null) {
-      final stuckAmount = max(min(headerHeight, stuckOffset), -headerHeight) / headerHeight;
+      final stuckAmount =
+          max(min(headerHeight, stuckOffset), -headerHeight) / headerHeight;
       _callback(stuckAmount);
     }
   }
