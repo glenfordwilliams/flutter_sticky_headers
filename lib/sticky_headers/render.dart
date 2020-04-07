@@ -104,8 +104,9 @@ class RenderStickyHeader extends RenderBox
 
     // determine size of ourselves based on content widget
     final width = max(constraints.minWidth, _contentBox.size.width);
-    final height = max(constraints.minHeight,
-        _overlapHeaders ? contentHeight : contentHeight);
+    final _max_height = contentHeight < headerHeight ? headerHeight: contentHeight;
+
+    final height = max(constraints.minHeight, _max_height);
     size = Size(width, height);
     assert(size.width == constraints.constrainWidth(width));
     assert(size.height == constraints.constrainHeight(height));
